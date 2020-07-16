@@ -41,7 +41,8 @@ class CreateOrderService {
 
     const productsOrdered = [];
 
-    for (let i = 0; i < productsList.length; i + 1) {
+    // eslint-disable-next-line
+    for (let i = 0; i < productsList.length; i++) {
       productsOrdered.push({
         product_id: productsList[i].id,
         price: productsList[i].price,
