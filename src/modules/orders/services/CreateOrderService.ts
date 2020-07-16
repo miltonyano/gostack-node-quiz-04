@@ -30,7 +30,32 @@ class CreateOrderService {
     private customersRepository: ICustomersRepository,
   ) {}
 
-  public async execute({ customer_id, products }: IRequest): Promise<Order> {}
+  public async execute({ customer_id, products }: IRequest): Promise<Order> {
+    const customer = await this.customersRepository.findById(customer_id);
+
+    if (!customer) {
+      throw new AppError('Customer not found');
+    }
+
+    const productsList = await this.productsRepository.findAllById(products);
+
+    const productsOrdered = [];
+
+    for (let i = 0; i < productsList.length; i + 1) {
+      productsOrdered.push({
+        product_id: productsList[i].id,
+        price: productsList[i].price,
+        quantity: products[i].quantity,
+      });
+    }
+
+    const order = await this.ordersRepository.create({
+      customer,
+      products: productsOrdered,
+    });
+
+    return order;
+  }
 }
 
 export default CreateOrderService;
