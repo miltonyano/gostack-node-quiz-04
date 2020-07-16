@@ -12,7 +12,9 @@ interface IRequest {
 
 @injectable()
 class CreateCustomerService {
-  constructor(private customersRepository: ICustomersRepository) {}
+  constructor(private customersRepository: ICustomersRepository) {
+    @inject('')
+  }
 
   public async execute({ name, email }: IRequest): Promise<Customer> {
     // TODO
