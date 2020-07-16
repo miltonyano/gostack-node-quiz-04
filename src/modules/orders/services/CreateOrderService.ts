@@ -39,16 +39,30 @@ class CreateOrderService {
 
     const productsList = await this.productsRepository.findAllById(products);
 
+    if (productsList.length !== products.length) {
+      throw new AppError('Product not found');
+    }
+
     const productsOrdered = [];
 
     // eslint-disable-next-line
     for (let i = 0; i < productsList.length; i++) {
+      if (products[i].quantity > productsList[i].quantity) {
+        throw new AppError(
+          `The stock for ${productsList[i].name} is below the requested: ${products[i].quantity}/${productsList[i].quantity}`,
+        );
+      }
+
       productsOrdered.push({
         product_id: productsList[i].id,
         price: productsList[i].price,
         quantity: products[i].quantity,
       });
+
+      productsList[i].quantity -= products[i].quantity;
     }
+
+    await this.productsRepository.updateQuantity(productsList);
 
     const order = await this.ordersRepository.create({
       customer,
